@@ -3,6 +3,7 @@ from tkcalendar import DateEntry
 from database import (
     add_income,
     add_daily_expense,
+    add_recurring_expense,
     get_total_income,
     get_total_recurring_expenses,
     get_daily_expenses_by_month
@@ -117,6 +118,43 @@ def open_add_daily_expense_popup():
     submit_button.pack(pady=5)
 
 
+def open_add_recurring_expense_popup():
+    popup = tk.Toplevel(root)
+    popup.title("Add Recurring Expense")
+
+    tk.Label(popup, text="Expense Name:").pack()
+    name_entry = tk.Entry(popup)
+    name_entry.pack()
+
+    tk.Label(popup, text="Amount:").pack()
+    vcmd = root.register(validate_amount)
+    amount_entry = tk.Entry(popup, validate="key",
+                            validatecommand=(vcmd, '%P'))
+    amount_entry.pack()
+
+    tk.Label(popup, text="Category ID:").pack()
+    category_entry = tk.Entry(popup)
+    category_entry.pack()
+
+    tk.Label(popup, text="Date:").pack()
+    date_entry = DateEntry(popup, width=16, background='darkblue',
+                           foreground='white', borderwidth=2,
+                           date_pattern='yyyy-mm-dd')
+    date_entry.pack()
+
+    def submit():
+        name = name_entry.get()
+        amount = float(amount_entry.get())
+        category_id = int(category_entry.get())
+        date = date_entry.get()
+        add_recurring_expense(name, amount, category_id, date)
+        popup.destroy()
+        update_dashboard()
+
+    submit_button = tk.Button(popup, text="Submit", command=submit)
+    submit_button.pack(pady=5)
+
+
 # --- Build the GUI ---
 add_income_button = tk.Button(root, text="Add Income",
                               command=open_add_income_popup)
@@ -125,6 +163,12 @@ add_income_button.pack(pady=10)
 add_daily_expense_button = tk.Button(root, text="Add Daily Expense",
                                      command=open_add_daily_expense_popup)
 add_daily_expense_button.pack(pady=5)
+
+add_recurring_expense_button = tk.Button(
+    root, text="Add Recurring Expense",
+    command=open_add_recurring_expense_popup
+    )
+add_recurring_expense_button.pack(pady=5)
 
 
 # --- Initial dashboard update ---
