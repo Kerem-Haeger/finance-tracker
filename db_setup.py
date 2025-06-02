@@ -41,6 +41,25 @@ CREATE TABLE IF NOT EXISTS recurring_expenses (
     FOREIGN KEY (categories_id) REFERENCES categories(id));
 ''')
 
-conn.commit()
+cursor.execute("SELECT COUNT(*) FROM categories;")
+count = cursor.fechtone()[0]
 
+if count == 0:
+    default_categories = [
+        ('Housing',),
+        ('Utilities',),
+        ('Food',),
+        ('Transportation',),
+        ('Entertainment',),
+        ('Health',),
+        ('Savings',),
+        ('Other',)
+    ]
+    cursor.executemany("INSERT INTO categories (name) VALUES (?)",
+                       default_categories)
+    print("Default categories added.")
+else:
+    print("Categories table already populated; skipping defaults.")
+
+conn.commit()
 conn.close()
