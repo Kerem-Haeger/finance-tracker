@@ -69,3 +69,59 @@ def add_category(name):
     conn.commit()
     conn.close()
     print(f"Category added: {name}")
+
+
+def get_total_income():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT SUM(amount) FROM income_sources;")
+    result = cursor.fetchone()[0]
+
+    conn.close()
+
+    total = result if result is not None else 0
+    return total
+
+
+def get_total_recurring_expenses():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT SUM(amount) FROM recurring_expenses;")
+    result = cursor.fetchone()[0]
+
+    conn.close()
+
+    total = result if result is not None else 0
+    return total
+
+
+def get_daily_expenses_by_month(year_month):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = '''
+                SELECT SUM(amount) FROM daily_expenses WHERE date_added LIKE ?;
+                '''
+    pattern = year_month + "%"
+
+    cursor.execute(query, (pattern,))
+    result = cursor.fetchone()[0]
+
+    conn.close()
+
+    total = result if result is not None else 0
+    return total
+
+
+def get_all_categories():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, name FROM categories;")
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
