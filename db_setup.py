@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS recurring_expenses (
 ''')
 
 cursor.execute("SELECT COUNT(*) FROM categories;")
-count = cursor.fechtone()[0]
+count = cursor.fetchone()[0]
 
 if count == 0:
     default_categories = [

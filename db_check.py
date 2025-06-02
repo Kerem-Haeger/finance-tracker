@@ -22,7 +22,7 @@ def check_database():
         table_name = table[0]
         print(f"\nChecking data in table: {table_name}")
         try:
-            cursor.execute(f"SELECT * FROM {table_name} LIMIT 5;")
+            cursor.execute(f"SELECT * FROM {table_name} LIMIT 50;")
             rows = cursor.fetchall()
             if rows:
                 for row in rows:
