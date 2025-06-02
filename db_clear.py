@@ -18,8 +18,8 @@ def clear_table(table_name):
 if __name__ == "__main__":
     # List the tables you want to clear here
     tables_to_clear = [
-        # 'income_sources',
-        # 'recurring_expenses',
+        'income_sources',
+        'recurring_expenses',
         'daily_expenses'
         # Add 'categories' if you want to reset that too
     ]
