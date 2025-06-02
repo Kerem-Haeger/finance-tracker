@@ -28,6 +28,12 @@ remaining_label = tk.Label(root, font=("Helvetica", 14, "bold"))
 remaining_label.pack(pady=10)
 
 
+def validate_amount(new_value):
+    if new_value == "" or new_value.replace('.', '', 1).isdigit():
+        return True
+    return False
+
+
 # --- Define function to update dashboard labels ---
 def update_dashboard():
     total_income = get_total_income()
@@ -42,6 +48,7 @@ def update_dashboard():
 
 # --- Define popup for adding income ---
 def open_add_income_popup():
+    vcmd = root.register(validate_amount)
     popup = tk.Toplevel(root)
     popup.title("Add Income")
 
@@ -50,7 +57,8 @@ def open_add_income_popup():
     source_entry.pack()
 
     tk.Label(popup, text="Amount:").pack()
-    amount_entry = tk.Entry(popup)
+    amount_entry = tk.Entry(popup, validate="key",
+                            validatecommand=(vcmd, '%P'))
     amount_entry.pack()
 
     tk.Label(popup, text="Date (YYYY-MM-DD):").pack()
