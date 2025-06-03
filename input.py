@@ -35,6 +35,15 @@ def setup_income_form(parent_frame):
         add_income(name, float(amount), date)
         print("Income entry saved.")
 
+        # Clear fields
+        amount_var.set("")
+        name_var.set("")
+        date_entry.set_date(datetime.date.today())
+
+        # Show success message
+        success_label.configure(text="✅ Added!")
+        parent_frame.after(2000, lambda: success_label.configure(text=""))
+
     # --- Layout settings ---
     field_padx = 10  # horizontal gap from left edge
     label_pady = 1   # small gap between label and input
@@ -89,6 +98,11 @@ def setup_income_form(parent_frame):
     )
     submit_btn.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
+    success_label = ctk.CTkLabel(
+        parent_frame, text="", text_color="green"
+        )
+    success_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
+
 
 def setup_recurring_form(parent_frame):
     def validate_amount(new_value):
@@ -113,6 +127,14 @@ def setup_recurring_form(parent_frame):
 
         if not amount or not name:
             print("Please fill in all fields.")
+            # Clear fields
+            amount_var.set("")
+            name_var.set("")
+            date_entry.set_date(datetime.date.today())
+
+            # Show success message
+            success_label.configure(text="✅ Added!")
+            parent_frame.after(2000, lambda: success_label.configure(text=""))
             return
 
         # Placeholder: categories_id set to 1 for now
@@ -188,6 +210,11 @@ def setup_recurring_form(parent_frame):
     )
     submit_btn.pack(anchor="w", padx=field_padx, pady=(large_pady, field_pady))
 
+    success_label = ctk.CTkLabel(
+        parent_frame, text="", text_color="green"
+    )
+    success_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
+
 
 def setup_oneoff_form(parent_frame):
     def validate_amount(new_value):
@@ -217,9 +244,18 @@ def setup_oneoff_form(parent_frame):
         add_daily_expense(name, float(amount), 1, date)
         print("One-off expense saved.")
 
+        # Clear fields
+        amount_var.set("")
+        name_var.set("")
+        date_entry.set_date(datetime.date.today())
+
+        # Show success message
+        success_label.configure(text="✅ Added!")
+        parent_frame.after(2000, lambda: success_label.configure(text=""))
+
     # --- Layout settings ---
     field_padx = 10
-    label_pady = 2
+    label_pady = 1
     field_pady = 8
     large_pady = 15
 
@@ -272,3 +308,8 @@ def setup_oneoff_form(parent_frame):
         command=submit_oneoff
     )
     submit_btn.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
+
+    success_label = ctk.CTkLabel(
+        parent_frame, text="", text_color="green"
+    )
+    success_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
