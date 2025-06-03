@@ -4,6 +4,9 @@ from input import (
     setup_recurring_form,
     setup_oneoff_form
     )
+from overview import (
+    display_overview_chart
+)
 
 # --- Setup window ---
 ctk.set_appearance_mode("light")
@@ -31,6 +34,7 @@ for frame in (overview_frame, list_frame, add_info_frame):
 # --- Overview and List placeholders ---
 ctk.CTkLabel(overview_frame, text="Overview Section").pack(pady=20)
 ctk.CTkLabel(list_frame, text="List Section").pack(pady=20)
+display_overview_chart(overview_frame)
 
 
 # --- Add Info Frame: 3 side-by-side sections ---
@@ -56,8 +60,10 @@ setup_oneoff_form(oneoff_section)
 def option_changed(choice):
     if choice == "Overview":
         show_frame(overview_frame)
+        display_overview_chart(overview_frame)  # Refresh chart!
     elif choice == "List":
         show_frame(list_frame)
+        # Optional: add refresh function for list data here
     elif choice == "Add Information":
         show_frame(add_info_frame)
 

@@ -97,6 +97,23 @@ def get_total_recurring_expenses():
     return total
 
 
+def get_recurring_expenses_by_category():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = '''
+        SELECT categories.name, SUM(recurring_expenses.amount)
+        FROM recurring_expenses
+        JOIN categories ON recurring_expenses.categories_id = categories.id
+        GROUP BY categories.name;
+    '''
+    cursor.execute(query)
+    results = cursor.fetchall()
+    conn.close()
+
+    return results  # List of (category_name, total_amount)
+
+
 def get_daily_expenses_by_month(year_month):
     conn = get_connection()
     cursor = conn.cursor()
