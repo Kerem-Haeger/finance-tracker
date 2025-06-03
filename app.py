@@ -7,6 +7,8 @@ from input import (
 from overview import (
     display_overview_chart
 )
+from list import display_list_data
+
 
 # --- Setup window ---
 ctk.set_appearance_mode("light")
@@ -63,7 +65,7 @@ def option_changed(choice):
         display_overview_chart(overview_frame)  # Refresh chart!
     elif choice == "List":
         show_frame(list_frame)
-        # Optional: add refresh function for list data here
+        display_list_data(list_frame)
     elif choice == "Add Information":
         show_frame(add_info_frame)
 

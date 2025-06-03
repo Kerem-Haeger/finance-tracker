@@ -4,11 +4,13 @@ import datetime
 from database import (
     add_income,
     add_recurring_expense,
-    add_daily_expense
-    )
+    add_daily_expense,
+    get_all_categories
+)
 
 
 def setup_income_form(parent_frame):
+
     def validate_amount(new_value):
         if new_value == "":
             return True
@@ -35,28 +37,24 @@ def setup_income_form(parent_frame):
         add_income(name, float(amount), date)
         print("Income entry saved.")
 
-        # Clear fields
         amount_var.set("")
         name_var.set("")
         date_entry.set_date(datetime.date.today())
 
-        # Show success message
         success_label.configure(text="✅ Added!")
         parent_frame.after(2000, lambda: success_label.configure(text=""))
 
-    # --- Layout settings ---
-    field_padx = 10  # horizontal gap from left edge
-    label_pady = 1   # small gap between label and input
-    field_pady = 8   # vertical gap between field blocks
-    large_pady = 15  # extra gap before submit button
+    field_padx = 10
+    label_pady = 1
+    field_pady = 8
+    large_pady = 15
 
-    # --- Section header ---
     section_label = ctk.CTkLabel(
-        parent_frame, text="Add An Income", font=ctk.CTkFont(weight="bold")
+        parent_frame, text="Add An Income",
+        font=ctk.CTkFont(weight="bold")
     )
     section_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Amount input ---
     amount_var = ctk.StringVar()
     amount_label = ctk.CTkLabel(
         parent_frame, text="Amount (£):"
@@ -71,7 +69,6 @@ def setup_income_form(parent_frame):
     vcmd = (parent_frame.register(validate_amount), "%P")
     amount_entry.configure(validate="key", validatecommand=vcmd)
 
-    # --- Name/reference input ---
     name_var = ctk.StringVar(value="Salary")
     name_label = ctk.CTkLabel(
         parent_frame, text="Reference Name (max 20 chars):"
@@ -83,7 +80,6 @@ def setup_income_form(parent_frame):
     )
     name_entry.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Date picker ---
     date_label = ctk.CTkLabel(
         parent_frame, text="Date (optional):"
     )
@@ -92,7 +88,6 @@ def setup_income_form(parent_frame):
     date_entry = DateEntry(parent_frame, width=12)
     date_entry.pack(anchor="w", padx=field_padx, pady=(0, large_pady))
 
-    # --- Submit button ---
     submit_btn = ctk.CTkButton(
         parent_frame, text="Add Income", command=submit_income
     )
@@ -100,11 +95,15 @@ def setup_income_form(parent_frame):
 
     success_label = ctk.CTkLabel(
         parent_frame, text="", text_color="green"
-        )
+    )
     success_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
 
 def setup_recurring_form(parent_frame):
+    categories = get_all_categories()
+    category_names = [name for _, name in categories]
+    category_id_map = {name: cid for cid, name in categories}
+
     def validate_amount(new_value):
         if new_value == "":
             return True
@@ -124,37 +123,34 @@ def setup_recurring_form(parent_frame):
         name = name_var.get()
         date = date_entry.get_date()
         frequency = freq_var.get()
+        category = category_var.get()
 
         if not amount or not name:
             print("Please fill in all fields.")
-            # Clear fields
-            amount_var.set("")
-            name_var.set("")
-            date_entry.set_date(datetime.date.today())
-
-            # Show success message
-            success_label.configure(text="✅ Added!")
-            parent_frame.after(2000, lambda: success_label.configure(text=""))
             return
 
-        # Placeholder: categories_id set to 1 for now
-        add_recurring_expense(name, float(amount), 1, date)
-        print(f"Recurring expense saved ({frequency}).")
+        category_id = category_id_map[category]
+        add_recurring_expense(name, float(amount), category_id, date)
+        print(f"Recurring expense saved ({frequency}, Category: {category}).")
 
-    # --- Layout settings ---
+        amount_var.set("")
+        name_var.set("")
+        date_entry.set_date(datetime.date.today())
+
+        success_label.configure(text="✅ Added!")
+        parent_frame.after(2000, lambda: success_label.configure(text=""))
+
     field_padx = 10
     label_pady = 1
     field_pady = 8
     large_pady = 15
 
-    # --- Section header ---
     section_label = ctk.CTkLabel(
         parent_frame, text="Add Recurring Expense",
         font=ctk.CTkFont(weight="bold")
     )
     section_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Amount input ---
     amount_var = ctk.StringVar()
     amount_label = ctk.CTkLabel(
         parent_frame, text="Amount (£):"
@@ -169,7 +165,6 @@ def setup_recurring_form(parent_frame):
     vcmd = (parent_frame.register(validate_amount), "%P")
     amount_entry.configure(validate="key", validatecommand=vcmd)
 
-    # --- Name/reference input ---
     name_var = ctk.StringVar(value="Rent")
     name_label = ctk.CTkLabel(
         parent_frame, text="Reference Name (max 20 chars):"
@@ -181,7 +176,17 @@ def setup_recurring_form(parent_frame):
     )
     name_entry.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Date picker ---
+    category_label = ctk.CTkLabel(
+        parent_frame, text="Category:"
+    )
+    category_label.pack(anchor="w", padx=field_padx, pady=(0, label_pady))
+
+    category_var = ctk.StringVar(value=category_names[0])
+    category_menu = ctk.CTkOptionMenu(
+        parent_frame, values=category_names, variable=category_var
+    )
+    category_menu.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
+
     date_label = ctk.CTkLabel(
         parent_frame, text="Date (optional):"
     )
@@ -190,7 +195,6 @@ def setup_recurring_form(parent_frame):
     date_entry = DateEntry(parent_frame, width=12)
     date_entry.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Frequency radio buttons ---
     freq_label = ctk.CTkLabel(
         parent_frame, text="Frequency:"
     )
@@ -203,7 +207,6 @@ def setup_recurring_form(parent_frame):
         )
         radio.pack(anchor="w", padx=field_padx)
 
-    # --- Submit button ---
     submit_btn = ctk.CTkButton(
         parent_frame, text="Add Recurring Expense",
         command=submit_recurring
@@ -217,6 +220,10 @@ def setup_recurring_form(parent_frame):
 
 
 def setup_oneoff_form(parent_frame):
+    categories = get_all_categories()
+    category_names = [name for _, name in categories]
+    category_id_map = {name: cid for cid, name in categories}
+
     def validate_amount(new_value):
         if new_value == "":
             return True
@@ -235,38 +242,34 @@ def setup_oneoff_form(parent_frame):
         amount = amount_var.get()
         name = name_var.get()
         date = date_entry.get_date()
+        category = category_var.get()
 
         if not amount or not name:
             print("Please fill in all fields.")
             return
 
-        # Placeholder: categories_id set to 1 for now
-        add_daily_expense(name, float(amount), 1, date)
-        print("One-off expense saved.")
+        category_id = category_id_map[category]
+        add_daily_expense(name, float(amount), category_id, date)
+        print(f"One-off expense saved (Category: {category}).")
 
-        # Clear fields
         amount_var.set("")
         name_var.set("")
         date_entry.set_date(datetime.date.today())
 
-        # Show success message
         success_label.configure(text="✅ Added!")
         parent_frame.after(2000, lambda: success_label.configure(text=""))
 
-    # --- Layout settings ---
     field_padx = 10
     label_pady = 1
     field_pady = 8
     large_pady = 15
 
-    # --- Section header ---
     section_label = ctk.CTkLabel(
         parent_frame, text="Add One-Off Expense",
         font=ctk.CTkFont(weight="bold")
     )
     section_label.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Amount input ---
     amount_var = ctk.StringVar()
     amount_label = ctk.CTkLabel(
         parent_frame, text="Amount (£):"
@@ -281,7 +284,6 @@ def setup_oneoff_form(parent_frame):
     vcmd = (parent_frame.register(validate_amount), "%P")
     amount_entry.configure(validate="key", validatecommand=vcmd)
 
-    # --- Name/reference input ---
     name_var = ctk.StringVar(value="Groceries")
     name_label = ctk.CTkLabel(
         parent_frame, text="Reference Name (max 20 chars):"
@@ -293,7 +295,17 @@ def setup_oneoff_form(parent_frame):
     )
     name_entry.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
 
-    # --- Date picker ---
+    category_label = ctk.CTkLabel(
+        parent_frame, text="Category:"
+    )
+    category_label.pack(anchor="w", padx=field_padx, pady=(0, label_pady))
+
+    category_var = ctk.StringVar(value=category_names[0])
+    category_menu = ctk.CTkOptionMenu(
+        parent_frame, values=category_names, variable=category_var
+    )
+    category_menu.pack(anchor="w", padx=field_padx, pady=(0, field_pady))
+
     date_label = ctk.CTkLabel(
         parent_frame, text="Date (optional):"
     )
@@ -302,7 +314,6 @@ def setup_oneoff_form(parent_frame):
     date_entry = DateEntry(parent_frame, width=12)
     date_entry.pack(anchor="w", padx=field_padx, pady=(0, large_pady))
 
-    # --- Submit button ---
     submit_btn = ctk.CTkButton(
         parent_frame, text="Add One-Off Expense",
         command=submit_oneoff

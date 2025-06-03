@@ -114,6 +114,21 @@ def get_recurring_expenses_by_category():
     return results  # List of (category_name, total_amount)
 
 
+def get_oneoff_expenses_by_category():
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = '''
+        SELECT categories.name, SUM(daily_expenses.amount)
+        FROM daily_expenses
+        JOIN categories ON daily_expenses.categories_id = categories.id
+        GROUP BY categories.name;
+    '''
+    cursor.execute(query)
+    results = cursor.fetchall()
+    conn.close()
+    return results  # [(category_name, total_amount)]
+
+
 def get_daily_expenses_by_month(year_month):
     conn = get_connection()
     cursor = conn.cursor()
