@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import datetime
 from database import (
     get_total_income,
-    get_daily_expenses_by_month,
     get_recurring_expenses_by_category,
     get_oneoff_expenses_by_category
 )
@@ -13,9 +11,6 @@ from database import (
 def display_overview_chart(parent_frame):
     # --- Get data ---
     total_income = get_total_income()
-    total_oneoff = get_daily_expenses_by_month(
-        datetime.date.today().strftime("%Y-%m")
-    )
     oneoff_by_cat = get_oneoff_expenses_by_category()
     recurring_by_cat = get_recurring_expenses_by_category()
     total_recurring = sum(amount for _, amount in recurring_by_cat)
