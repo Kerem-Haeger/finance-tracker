@@ -23,18 +23,15 @@ def display_overview_chart(parent_frame):
     colors = []
     explode = []
 
-    # Helper: generate shades
     def get_color_shades(colormap, n):
         return [colormap(i / (n + 1)) for i in range(1, n + 1)]
 
-    # Remaining (single green shade)
     if remaining > 0:
         labels.append(f"Remaining (£{remaining:.2f})")
         sizes.append(remaining)
-        colors.append("#66bb6a")  # solid green
+        colors.append("#66bb6a")
         explode.append(0.05)
 
-    # Recurring: dynamic blue shades
     rec_colors = get_color_shades(cm.Blues, len(recurring_by_cat))
     for i, (category, amount) in enumerate(recurring_by_cat):
         labels.append(f"Recurring: {category} (£{amount:.2f})")
@@ -42,7 +39,6 @@ def display_overview_chart(parent_frame):
         colors.append(rec_colors[i])
         explode.append(0.03)
 
-    # One-off: dynamic red shades
     oneoff_colors = get_color_shades(cm.Reds, len(oneoff_by_cat))
     for i, (category, amount) in enumerate(oneoff_by_cat):
         labels.append(f"One-Off: {category} (£{amount:.2f})")
@@ -51,7 +47,7 @@ def display_overview_chart(parent_frame):
         explode.append(0.03)
 
     # --- Create figure ---
-    fig, ax = plt.subplots(figsize=(7, 7))
+    fig, ax = plt.subplots(figsize=(8, 8))
 
     def make_autopct(values):
         def my_autopct(pct):
@@ -70,11 +66,29 @@ def display_overview_chart(parent_frame):
         pctdistance=0.85
     )
 
+    # --- Primary legend (categories) ---
     ax.legend(
         wedges, labels,
         title="Categories",
         loc="center left",
-        bbox_to_anchor=(1, 0, 0.5, 1)
+        bbox_to_anchor=(1, 0.5)  # right side, centered vertically
+    )
+
+    # --- Secondary legend (totals) ---
+    summary_labels = [
+        f"Total Income: £{total_income:.2f}",
+        f"Total Recurring: £{total_recurring:.2f}"
+    ]
+    ax.text(
+        0, -1.3,  # X=0 (center), Y=-1.3 (below chart)
+        "\n".join(summary_labels),
+        ha="center", va="center",
+        fontsize=10,
+        bbox=dict(
+            boxstyle="round,pad=0.5",
+            edgecolor="gray",
+            facecolor="white"
+            )
     )
 
     # Donut hole

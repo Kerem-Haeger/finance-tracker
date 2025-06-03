@@ -157,3 +157,31 @@ def get_all_categories():
     conn.close()
 
     return rows
+
+
+def get_recurring_expense_entries_by_category(category_name):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT name, amount, date_added
+        FROM recurring_expenses
+        JOIN categories ON recurring_expenses.categories_id = categories.id
+        WHERE categories.name = ?
+    ''', (category_name,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"name": r[0], "amount": r[1], "date": r[2]} for r in rows]
+
+
+def get_oneoff_expense_entries_by_category(category_name):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT name, amount, date_added
+        FROM daily_expenses
+        JOIN categories ON daily_expenses.categories_id = categories.id
+        WHERE categories.name = ?
+    ''', (category_name,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"name": r[0], "amount": r[1], "date": r[2]} for r in rows]
