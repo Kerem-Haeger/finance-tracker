@@ -1,4 +1,9 @@
 import customtkinter as ctk
+from input import (
+    setup_income_form,
+    setup_recurring_form,
+    setup_oneoff_form
+    )
 
 # --- Setup window ---
 ctk.set_appearance_mode("light")
@@ -23,10 +28,28 @@ for frame in (overview_frame, list_frame, add_info_frame):
     frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.9)
 
 
-# --- Add labels (just placeholders) ---
+# --- Overview and List placeholders ---
 ctk.CTkLabel(overview_frame, text="Overview Section").pack(pady=20)
 ctk.CTkLabel(list_frame, text="List Section").pack(pady=20)
-ctk.CTkLabel(add_info_frame, text="Add Info Section").pack(pady=20)
+
+
+# --- Add Info Frame: 3 side-by-side sections ---
+income_section = ctk.CTkFrame(add_info_frame)
+recurring_section = ctk.CTkFrame(add_info_frame)
+oneoff_section = ctk.CTkFrame(add_info_frame)
+
+income_section.pack(side="left", expand=True, fill="both", padx=5, pady=5)
+recurring_section.pack(side="left", expand=True, fill="both", padx=5, pady=5)
+oneoff_section.pack(side="left", expand=True, fill="both", padx=5, pady=5)
+
+# --- Add income form inside Income Section ---
+setup_income_form(income_section)
+
+# --- Add expense form inside Recurring Section ---
+setup_recurring_form(recurring_section)
+
+# --- Add expense form inside One-Off Section ---
+setup_oneoff_form(oneoff_section)
 
 
 # --- Dropdown callback ---
@@ -51,7 +74,8 @@ option_menu = ctk.CTkOptionMenu(
 )
 option_menu.place(relx=0.5, rely=0.07, anchor="center")
 
-# Show default frame
+
+# --- Show default frame ---
 show_frame(overview_frame)
 
 
